@@ -1,17 +1,12 @@
 import cv2
-import os
 from typing import List, Tuple, Any, Optional
-import imutils
 import numpy as np
 from scipy.spatial import distance as dist
 from imutils import face_utils
 import dlib
 from utils.consts import PREDICTOR_PATH, EYE_AR_THRESH
-import time
 
-# cascades_dir = os.path.join(os.getcwd(), 'cascades')
-# face_Cascade_dir = os.path.join(cascades_dir, 'haarcascade_frontalface_default.xml')
-# face_cascade = cv2.CascadeClassifier(face_Cascade_dir)
+
 left_start, left_end = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 right_start, right_end = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 predictor = dlib.shape_predictor(PREDICTOR_PATH)
@@ -39,7 +34,6 @@ def eye_aspect_ratio(eye_landmarks: List[Tuple]) -> float:
 
 
 def get_gray_image(image: np.ndarray) -> np.ndarray:
-    image = imutils.resize(image, width=500)
     gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     return gray_image
 
@@ -50,6 +44,7 @@ def get_face_rects(image: np.ndarray) -> Optional[List[Tuple]]:
         return None
     largest_face = max(rects, key=lambda rect: (rect.right() - rect.left()) * (rect.bottom() - rect.top()))
     return largest_face
+
 
 def get_face_shape(gray_image: np.ndarray, largest_face: List[Tuple]) -> np.ndarray:
     shape = predictor(gray_image, largest_face)
@@ -72,7 +67,7 @@ def extract_eyes_coordinates(image: np.ndarray) -> Optional[Tuple[Any, Any]]:
     return shape[left_start: left_end], shape[right_start: right_end]
 
 
-def are_eyes_blinked(image: np.ndarray) -> bool:
+def are_eyes_blinked(image: np.ndarray) -> (bool, np.ndarray):
     """
     Determine if the eyes in the given image are blinked.
 
@@ -81,12 +76,12 @@ def are_eyes_blinked(image: np.ndarray) -> bool:
     """
     eye_coordinates = extract_eyes_coordinates(image)
     if not eye_coordinates:
-        return False
+        return False, None
     left_eye, right_eye = eye_coordinates
     left_eye_ratio = eye_aspect_ratio(left_eye)
     right_eye_ratio = eye_aspect_ratio(right_eye)
     average = (left_eye_ratio + right_eye_ratio) / 2
-    return average < EYE_AR_THRESH
+    return average < EYE_AR_THRESH, eye_coordinates
 
 
 if __name__ == '__main__':
