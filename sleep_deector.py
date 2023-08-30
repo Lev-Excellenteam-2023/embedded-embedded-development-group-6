@@ -11,8 +11,6 @@ from alarms.alarms import alarm
 
 VS = VideoStream(src=0).start()
 
-
-
 def capture() -> (ndarray, int):
     frame = VS.read()
     frame = resize(frame, width=WIDTH_RESIZE)
@@ -52,7 +50,7 @@ def is_sleeping() -> None:
         counter, start = handle_counter(counter, is_blinked, start)
         image_show(frame, counter)
         if counter >= MAX_BLINKS:
-            alarm()
+            alarm(frame)
         if key == ord('q'):
             break
     destroyAllWindows()
