@@ -1,17 +1,24 @@
+import numpy as np
 from cv2 import cvtColor, COLOR_RGB2GRAY
 from typing import List, Tuple, Any, Optional
 from numpy import ndarray
 from scipy.spatial import distance as dist
 from imutils import face_utils
-from utils.consts import EYE_AR_THRESH, LEFT_START, LEFT_END, RIGHT_START, RIGHT_END, PREDICTOR, FACE_DETECTOR
+from utils.consts import EYE_AR_THRESH, PREDICTOR_PATH
+from dlib import shape_predictor, get_frontal_face_detector, rectangle
+
+LEFT_START, LEFT_END = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+RIGHT_START, RIGHT_END = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+PREDICTOR = shape_predictor(PREDICTOR_PATH)
+FACE_DETECTOR = get_frontal_face_detector()
 
 
-def eye_aspect_ratio(eye_landmarks: List[Tuple]) -> float:
+def eye_aspect_ratio(eye_landmarks: np.ndarray) -> float:
     """
     Calculate the eye aspect ratio (EAR) to detect eye blinks and eye openness.
 
-    The EAR is computed as the average of two ratios:
-    1. The distance between the vertical eye landmarks (upper and lower eyelids) divided by the horizontal distance
+    The EAR is computed as the average of:
+    The distance between the vertical eye landmarks (upper and lower eyelids) divided by the horizontal distance
        between the horizontal eye landmarks (the inner and outer corners of the eye).
 
     :param eye_landmarks: A list of tuples containing the (x, y) coordinates of six eye landmarks in the following order:
@@ -26,14 +33,14 @@ def eye_aspect_ratio(eye_landmarks: List[Tuple]) -> float:
     return ratio
 
 
-def get_gray_image(image: ndarray) -> ndarray:
+def get_gray_image(rgb_image: ndarray) -> ndarray:
     """
     Convert a color image to grayscale.
 
-    :param image: A NumPy array representing a color image in RGB format.
+    :param rgb_image: A NumPy array representing a color image in RGB format.
     :return: A NumPy array representing the grayscale version of the input image.
     """
-    gray_image = cvtColor(image, COLOR_RGB2GRAY)
+    gray_image = cvtColor(rgb_image, COLOR_RGB2GRAY)
     return gray_image
 
 
@@ -66,7 +73,7 @@ def get_face_shape(gray_image: ndarray, largest_face: List[Tuple]) -> ndarray:
     return shape
 
 
-def extract_eyes_coordinates(image: ndarray) -> Optional[Tuple[Any, Any]]:
+def extract_eyes_coordinates(image: ndarray) -> Optional[Tuple[np.ndarray, np.ndarray]]:
     """
     Extracts the coordinates of the left and right eyes from a face image.
 
