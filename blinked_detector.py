@@ -96,11 +96,3 @@ def are_eyes_blinked(image: np.ndarray) -> (bool, np.ndarray):
     right_eye_ratio = eye_aspect_ratio(right_eye)
     average = (left_eye_ratio + right_eye_ratio) / 2
     return average < EYE_AR_THRESH, eye_coordinates
-
-
-if __name__ == '__main__':
-    # frame = cv2.imread(('images\\20.png'))
-    # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    # plt.imshow(frame)
-    # plt.show()
-    print(are_eyes_blinked(cv2.imread('images\\18.png')))
