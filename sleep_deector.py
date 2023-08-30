@@ -1,4 +1,4 @@
-from imutils import resize, face_utils
+from imutils import resize
 from imutils.video import VideoStream
 from numpy import ndarray, array
 from blinked_detector import are_eyes_blinked
@@ -37,21 +37,21 @@ def mark_eyes_on_image(frame: ndarray, eye_coordinates: ndarray) -> None:
     drawContours(frame, [right_eye_hull], -1, GREEN, PUT_TEXT_THICKNESS)
 
 
-def handle_counter(counter: int, is_blinked: bool, start_time: float) -> (int, float):
+def handle_counter(counter: int, is_blinked: bool, start_time: float) -> (int, float, bool):
     """
     Update a counter based on whether an eye blink is detected and a timing threshold.
 
-    :param counter: An integer representing the current count.
-    :param is_blinked: A boolean indicating whether an eye blink is detected.
-    :param start_time: A float representing the start time of the measurement.
-    :return: A tuple containing the updated counter (int) and the updated start time (float).
+    :param counter: An integer representing the current count. :param is_blinked: A boolean indicating whether an eye
+    blink is detected. :param start_time: A float representing the start time of the measurement. :return: A tuple
+    containing the updated counter (int) and the updated start time (float) and a flag that says if half a second has
+    passed (bool).
     """
     if is_blinked and time() - start_time > 0.5:
-        return counter + 1, time()
+        return counter + 1, time(), True
     elif not is_blinked:
-        return 0, start_time
+        return 0, start_time, False
     else:
-        return counter, start_time
+        return counter, start_time, False
 
 
 def image_show(frame: ndarray, counter: int) -> None:
@@ -79,10 +79,11 @@ def is_sleeping() -> None:
         is_blinked, eye_coordinates = are_eyes_blinked(array(frame))
         if eye_coordinates:
             mark_eyes_on_image(frame, eye_coordinates)
-        counter, start = handle_counter(counter, is_blinked, start)
+        counter, start, half_second_passed = handle_counter(counter, is_blinked, start)
         image_show(frame, counter)
         if counter >= MAX_BLINKS:
             alarm(frame)
+
         if key == ord('q'):
             break
     destroyAllWindows()
