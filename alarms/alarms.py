@@ -1,12 +1,11 @@
 import time
-import webbrowser
-from utils.consts import ALARM_PATH
+import playsound
 
 
 def alarm():
     time1 = time.time() + 1
     while time1 > time.time():
-        webbrowser.open(ALARM_PATH)
+        playsound.playsound('Alarm.mp3')
 
 
 if __name__ == '__main__':
