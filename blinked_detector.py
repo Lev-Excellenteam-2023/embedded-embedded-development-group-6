@@ -1,6 +1,6 @@
-import cv2
+from cv2 import cvtColor, COLOR_RGB2GRAY
 from typing import List, Tuple, Any, Optional
-import numpy as np
+from numpy import ndarray
 from scipy.spatial import distance as dist
 from imutils import face_utils
 from utils.consts import EYE_AR_THRESH, LEFT_START, LEFT_END, RIGHT_START, RIGHT_END, PREDICTOR, FACE_DETECTOR
@@ -26,18 +26,18 @@ def eye_aspect_ratio(eye_landmarks: List[Tuple]) -> float:
     return ratio
 
 
-def get_gray_image(image: np.ndarray) -> np.ndarray:
+def get_gray_image(image: ndarray) -> ndarray:
     """
     Convert a color image to grayscale.
 
     :param image: A NumPy array representing a color image in RGB format.
     :return: A NumPy array representing the grayscale version of the input image.
     """
-    gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    gray_image = cvtColor(image, COLOR_RGB2GRAY)
     return gray_image
 
 
-def get_face_rects(image: np.ndarray) -> Optional[List[Tuple]]:
+def get_face_rects(image: ndarray) -> Optional[List[Tuple]]:
     """
     Detect faces in an image using a face detection model.
 
@@ -52,7 +52,7 @@ def get_face_rects(image: np.ndarray) -> Optional[List[Tuple]]:
     return largest_face
 
 
-def get_face_shape(gray_image: np.ndarray, largest_face: List[Tuple]) -> np.ndarray:
+def get_face_shape(gray_image: ndarray, largest_face: List[Tuple]) -> ndarray:
     """
     Get facial landmarks for the largest detected face in a grayscale image.
 
@@ -66,7 +66,7 @@ def get_face_shape(gray_image: np.ndarray, largest_face: List[Tuple]) -> np.ndar
     return shape
 
 
-def extract_eyes_coordinates(image: np.ndarray) -> Optional[Tuple[Any, Any]]:
+def extract_eyes_coordinates(image: ndarray) -> Optional[Tuple[Any, Any]]:
     """
     Extracts the coordinates of the left and right eyes from a face image.
 
@@ -81,7 +81,7 @@ def extract_eyes_coordinates(image: np.ndarray) -> Optional[Tuple[Any, Any]]:
     return shape[LEFT_START: LEFT_END], shape[RIGHT_START: RIGHT_END]
 
 
-def are_eyes_blinked(image: np.ndarray) -> (bool, np.ndarray):
+def are_eyes_blinked(image: ndarray) -> (bool, ndarray):
     """
     Determine if the eyes in the given image are blinked.
 
