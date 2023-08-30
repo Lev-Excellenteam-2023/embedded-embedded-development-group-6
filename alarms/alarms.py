@@ -21,7 +21,7 @@ def alarm(image=None):
     playsound.playsound(ALARM_PATH)
 
     if USE_TELEGRAM and image is not None:
-        send_to_telegram(image)
+        send_image_to_telegram(image)
 
 
 def send_image_to_telegram(image: array) -> None:
