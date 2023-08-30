@@ -3,14 +3,7 @@ from typing import List, Tuple, Any, Optional
 import numpy as np
 from scipy.spatial import distance as dist
 from imutils import face_utils
-import dlib
-from utils.consts import PREDICTOR_PATH, EYE_AR_THRESH
-
-
-left_start, left_end = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-right_start, right_end = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
-predictor = dlib.shape_predictor(PREDICTOR_PATH)
-face_detector = dlib.get_frontal_face_detector()
+from utils.consts import EYE_AR_THRESH, LEFT_START, LEFT_END, RIGHT_START, RIGHT_END, PREDICTOR, FACE_DETECTOR
 
 
 def eye_aspect_ratio(eye_landmarks: List[Tuple]) -> float:
@@ -34,12 +27,25 @@ def eye_aspect_ratio(eye_landmarks: List[Tuple]) -> float:
 
 
 def get_gray_image(image: np.ndarray) -> np.ndarray:
+    """
+    Convert a color image to grayscale.
+
+    :param image: A NumPy array representing a color image in RGB format.
+    :return: A NumPy array representing the grayscale version of the input image.
+    """
     gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     return gray_image
 
 
 def get_face_rects(image: np.ndarray) -> Optional[List[Tuple]]:
-    rects = face_detector(image, 0)
+    """
+    Detect faces in an image using a face detection model.
+
+    :param image: A NumPy array representing an input image.
+    :return: A list of tuples representing detected face rectangles
+             as (left, top, right, bottom) coordinates.
+    """
+    rects = FACE_DETECTOR(image, 0)
     if not rects:
         return None
     largest_face = max(rects, key=lambda rect: (rect.right() - rect.left()) * (rect.bottom() - rect.top()))
@@ -47,7 +53,15 @@ def get_face_rects(image: np.ndarray) -> Optional[List[Tuple]]:
 
 
 def get_face_shape(gray_image: np.ndarray, largest_face: List[Tuple]) -> np.ndarray:
-    shape = predictor(gray_image, largest_face)
+    """
+    Get facial landmarks for the largest detected face in a grayscale image.
+
+    :param gray_image: A NumPy array representing a grayscale image containing a face.
+    :param largest_face: A list of tuples representing the coordinates of the largest detected face
+                         as (left, top, right, bottom) coordinates.
+    :return: A NumPy array containing facial landmark points (x, y) for the largest detected face.
+    """
+    shape = PREDICTOR(gray_image, largest_face)
     shape = face_utils.shape_to_np(shape)
     return shape
 
@@ -64,7 +78,7 @@ def extract_eyes_coordinates(image: np.ndarray) -> Optional[Tuple[Any, Any]]:
     if not rect:
         return None
     shape = get_face_shape(gray_image, rect)
-    return shape[left_start: left_end], shape[right_start: right_end]
+    return shape[LEFT_START: LEFT_END], shape[RIGHT_START: RIGHT_END]
 
 
 def are_eyes_blinked(image: np.ndarray) -> (bool, np.ndarray):
