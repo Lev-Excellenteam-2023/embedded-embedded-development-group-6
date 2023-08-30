@@ -4,7 +4,7 @@ from numpy import ndarray, array
 from blinked_detector import are_eyes_blinked
 from cv2 import convexHull, waitKey, drawContours, putText, imshow, destroyAllWindows
 from time import time
-from utils.consts import MAX_BLINKS, FONT, WIDTH_RESIZE, GREEN, \
+from utils.consts import MAX_BLINKS, FONT, WIDTH_RESIZE, GREEN, PERIOD_TIME,\
     PUT_TEXT_THICKNESS, FONT_SCALE, IMAGE_NAME, X_COORDINATE, Y_COORDINATE
 from alarms.alarms import alarm
 
@@ -36,7 +36,7 @@ def handle_counter(counter: int, is_blinked: bool, start_time: float) -> (int, f
     :return: A tuple containing the updated counter (int) and the updated start time (float) and a flag that says if half a second has
     passed (bool).
     """
-    if is_blinked and time() - start_time > 0.5:
+    if is_blinked and time() - start_time > PERIOD_TIME:
         return counter + 1, time(), True
     elif not is_blinked:
         return 0, start_time, False

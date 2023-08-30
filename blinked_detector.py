@@ -44,9 +44,9 @@ def get_gray_image(rgb_image: ndarray) -> ndarray:
     return gray_image
 
 
-def get_face_rects(image: ndarray) -> Optional[rectangle]:
+def get_face_coordinates(image: ndarray) -> Optional[rectangle]:
     """
-    Detect faces in an image using a face detection model.
+    Detect the largest face in an image using a face detection model.
 
     :param image: A NumPy array representing an input image.
     :return: A list of tuples representing detected face rectangles
@@ -59,16 +59,16 @@ def get_face_rects(image: ndarray) -> Optional[rectangle]:
     return largest_face
 
 
-def get_face_shape(gray_image: ndarray, largest_face: rectangle) -> ndarray:
+def get_face_organs_shapes(gray_image: ndarray, face: rectangle) -> ndarray:
     """
-    Get facial landmarks for the largest detected face in a grayscale image.
+    Get coordinates in the face (68 coordinates on the face).
 
     :param gray_image: A NumPy array representing a grayscale image containing a face.
-    :param largest_face: A list of tuples representing the coordinates of the largest detected face
+    :param face: A list of tuples representing the coordinates of the largest detected face
                          as (left, top, right, bottom) coordinates.
     :return: A NumPy array containing facial landmark points (x, y) for the largest detected face.
     """
-    shape = PREDICTOR(gray_image, largest_face)
+    shape = PREDICTOR(gray_image, face)
     shape = face_utils.shape_to_np(shape)
     return shape
 
@@ -81,10 +81,10 @@ def extract_eyes_coordinates(image: ndarray) -> Optional[Tuple[np.ndarray, np.nd
     :return: Two NumPy arrays containing the coordinates of the left and right eyes.
     """
     gray_image = get_gray_image(image)
-    rect = get_face_rects(gray_image)
+    rect = get_face_coordinates(gray_image)
     if not rect:
         return None
-    shape = get_face_shape(gray_image, rect)
+    shape = get_face_organs_shapes(gray_image, rect)
     return shape[LEFT_START: LEFT_END], shape[RIGHT_START: RIGHT_END]
 
 
