@@ -69,10 +69,10 @@ def is_sleeping() -> None:
         is_blinked, eye_coordinates = are_eyes_blinked(array(frame))
         if eye_coordinates:
             mark_eyes_on_image(frame, eye_coordinates)
-        counter, start = handle_counter(counter, is_blinked, start)
+        counter, start, half_a_second_passed = handle_counter(counter, is_blinked, start)
         image_show(frame, counter)
-        if counter >= MAX_BLINKS:
-            alarm()
+        if counter >= MAX_BLINKS and half_a_second_passed:
+            alarm(frame)
         if key == ord('q'):
             break
     destroyAllWindows()
