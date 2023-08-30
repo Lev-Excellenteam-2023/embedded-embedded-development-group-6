@@ -19,3 +19,5 @@ X_COORDINATE = 10
 Y_COORDINATE = 350
 
 IMAGE_NAME = "Surgeon's image"
+
+UP_SAMPLING = 1

@@ -4,7 +4,7 @@ from typing import List, Tuple, Any, Optional
 from numpy import ndarray
 from scipy.spatial import distance as dist
 from imutils import face_utils
-from utils.consts import EYE_AR_THRESH, PREDICTOR_PATH
+from utils.consts import EYE_AR_THRESH, PREDICTOR_PATH, UP_SAMPLING
 from dlib import shape_predictor, get_frontal_face_detector, rectangle
 
 LEFT_START, LEFT_END = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
@@ -44,7 +44,7 @@ def get_gray_image(rgb_image: ndarray) -> ndarray:
     return gray_image
 
 
-def get_face_rects(image: ndarray) -> Optional[List[Tuple]]:
+def get_face_rects(image: ndarray) -> Optional[rectangle]:
     """
     Detect faces in an image using a face detection model.
 
@@ -52,14 +52,14 @@ def get_face_rects(image: ndarray) -> Optional[List[Tuple]]:
     :return: A list of tuples representing detected face rectangles
              as (left, top, right, bottom) coordinates.
     """
-    rects = FACE_DETECTOR(image, 0)
+    rects = FACE_DETECTOR(image, UP_SAMPLING)
     if not rects:
         return None
     largest_face = max(rects, key=lambda rect: (rect.right() - rect.left()) * (rect.bottom() - rect.top()))
     return largest_face
 
 
-def get_face_shape(gray_image: ndarray, largest_face: List[Tuple]) -> ndarray:
+def get_face_shape(gray_image: ndarray, largest_face: rectangle) -> ndarray:
     """
     Get facial landmarks for the largest detected face in a grayscale image.
 
