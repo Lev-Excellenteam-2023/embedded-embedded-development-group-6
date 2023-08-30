@@ -6,7 +6,7 @@ FONT = FONT_HERSHEY_SIMPLEX
 
 PREDICTOR_PATH = abspath(join(__file__, pardir, pardir, 'blink_detector', 'shape_predictor_68_face_landmarks.dat'))
 
-EYE_AR_THRESH = 0.22
+EYE_AR_THRESH = 0.27
 MAX_BLINKS = 2
 
 ALARM_PATH = abspath(join(__file__, pardir, pardir, 'alarms', 'Alarm.mp3'))
@@ -21,3 +21,6 @@ Y_COORDINATE = 350
 IMAGE_NAME = "Surgeon's image"
 
 UP_SAMPLING = 1
+
+TELEGRAM_MAX = 20
+TELEGRAM_MSG = 'SLEEP'
