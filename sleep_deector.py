@@ -12,6 +12,11 @@ VS = VideoStream(src=0).start()
 
 
 def capture() -> (ndarray, int):
+    """
+    Captures a frame from a video source, resizes it, and waits for a key press.
+
+    :return: A tuple containing the captured frame (as a NumPy ndarray) and the key code.
+    """
     frame = VS.read()
     frame = resize(frame, width=WIDTH_RESIZE)
     key = waitKey(1)
@@ -19,16 +24,25 @@ def capture() -> (ndarray, int):
 
 
 def mark_eyes_on_image(frame: ndarray, eye_coordinates: ndarray) -> None:
+    """
+    Marks the eyes on an image frame using convex hulls.
+
+    :param frame: The image frame to mark the eyes on.
+    :param eye_coordinates: A NumPy array containing coordinates of the eyes.
+    :return: None
+
+    """
     left_eye_hull = convexHull(eye_coordinates[0])
     right_eye_hull = convexHull(eye_coordinates[1])
     drawContours(frame, [left_eye_hull], -1, GREEN, PUT_TEXT_THICKNESS)
     drawContours(frame, [right_eye_hull], -1, GREEN, PUT_TEXT_THICKNESS)
 
 
-def handle_counter(counter: int, is_blinked: bool, start_time: float) -> (int, float, bool):
+def handle_counter(counter: int, is_blinked: bool, start_time: float, frame) -> (int, float, bool):
     """
     Update a counter based on whether an eye blink is detected and a timing threshold.
 
+    :param frame: The frame for sending to alarm.
     :param counter: An integer representing the current count.
     :param is_blinked: A boolean indicating whether an eye
     blink is detected.
@@ -37,11 +51,14 @@ def handle_counter(counter: int, is_blinked: bool, start_time: float) -> (int, f
     passed (bool).
     """
     if is_blinked and time() - start_time > PERIOD_TIME:
-        return counter + 1, time(), True
+        counter += 1
+        if counter >= MAX_BLINKS:
+            alarm(frame)
+        start_time = time()
     elif not is_blinked:
-        return 0, start_time, False
-    else:
-        return counter, start_time, False
+        counter = 0
+    return counter, start_time
+
 
 
 def image_show(frame: ndarray, counter: int) -> None:
@@ -69,10 +86,9 @@ def is_sleeping() -> None:
         is_blinked, eye_coordinates = are_eyes_blinked(array(frame))
         if eye_coordinates:
             mark_eyes_on_image(frame, eye_coordinates)
-        counter, start, half_a_second_passed = handle_counter(counter, is_blinked, start)
+        counter, start = handle_counter(counter, is_blinked, start, frame)
         image_show(frame, counter)
-        if counter >= MAX_BLINKS and half_a_second_passed:
-            alarm(frame)
+
         if key == ord('q'):
             break
     destroyAllWindows()
