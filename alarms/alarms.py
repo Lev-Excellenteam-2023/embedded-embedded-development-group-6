@@ -27,7 +27,7 @@ def alarm(image=None):
 def send_image_to_telegram(image: array) -> None:
     global telegram_counter
 
-    log(telegram_counter, level=DEBUG)
+    log(DEBUG, telegram_counter)
 
     if telegram_counter == TELEGRAM_MAX:
         try:
@@ -36,10 +36,10 @@ def send_image_to_telegram(image: array) -> None:
             response = post(API_URL, data={'chat_id': TELEGRAM_CHAT_ID},
                             files={'photo': ('image.jpg', encoded_image.tobytes())})
 
-            log(response.text, level=INFO)
+            log(INFO, response.text)
 
         except Exception as e:
-            log(e, level=DEBUG)
+            log(DEBUG, e)
         finally:
             telegram_counter = 0
 
