@@ -17,7 +17,7 @@ Y_COORDINATE = 350
 IMAGE_NAME = "Surgeon's image"
 
 # sleep and eyes blinked detection
-EYE_AR_THRESH = 0.27
+EYE_AR_THRESH = 0.27    
 MAX_BLINKS = 2
 UP_SAMPLING = 1
 PERIOD_TIME = 0.5
