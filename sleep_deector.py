@@ -1,11 +1,13 @@
+from typing import Tuple
+
 from imutils import resize, face_utils
 from imutils.video import VideoStream
 from numpy import ndarray, array
 from blinked_detector import are_eyes_blinked
 from cv2 import convexHull, waitKey, drawContours, putText, imshow, destroyAllWindows
 from time import time
-from utils.consts import MAX_BLINKS, FONT, WIDTH_RESIZE, GREEN, PERIOD_TIME,\
-    PUT_TEXT_THICKNESS, FONT_SCALE, IMAGE_NAME, X_COORDINATE, Y_COORDINATE
+from utils.consts import MAX_BLINKS, FONT, WIDTH_RESIZE, GREEN, PERIOD_TIME, \
+    PUT_TEXT_THICKNESS, FONT_SCALE, IMAGE_NAME, X_COORDINATE, Y_COORDINATE, RED
 from alarms.alarms import alarm
 
 VS = VideoStream(src=0).start()
@@ -23,10 +25,11 @@ def capture() -> (ndarray, int):
     return frame, key
 
 
-def mark_eyes_on_image(frame: ndarray, eye_coordinates: ndarray) -> None:
+def mark_eyes_on_image(frame: ndarray, eye_coordinates: ndarray, text_color: Tuple[int, int, int]) -> None:
     """
     Marks the eyes on an image frame using convex hulls.
 
+    :param text_color: text_color: The color the eyes should be colored.
     :param frame: The image frame to mark the eyes on.
     :param eye_coordinates: A NumPy array containing coordinates of the eyes.
     :return: None
@@ -34,8 +37,8 @@ def mark_eyes_on_image(frame: ndarray, eye_coordinates: ndarray) -> None:
     """
     left_eye_hull = convexHull(eye_coordinates[0])
     right_eye_hull = convexHull(eye_coordinates[1])
-    drawContours(frame, [left_eye_hull], -1, GREEN, PUT_TEXT_THICKNESS)
-    drawContours(frame, [right_eye_hull], -1, GREEN, PUT_TEXT_THICKNESS)
+    drawContours(frame, [left_eye_hull], -1, text_color, PUT_TEXT_THICKNESS)
+    drawContours(frame, [right_eye_hull], -1, text_color, PUT_TEXT_THICKNESS)
 
 
 def handle_counter(counter: int, is_blinked: bool, start_time: float, frame) -> (int, float, bool):
@@ -60,16 +63,16 @@ def handle_counter(counter: int, is_blinked: bool, start_time: float, frame) -> 
     return counter, start_time
 
 
-
-def image_show(frame: ndarray, counter: int) -> None:
+def image_show(frame: ndarray, counter: int, text_color: Tuple[int, int, int]) -> None:
     """
     Display an image frame with a counter value overlaid.
 
+    :param text_color: The color the number should be colored.
     :param frame: A numpy.ndarray representing the image frame to display.
     :param counter: An integer representing the counter value to display on the image.
     :return: None
     """
-    putText(frame, str(counter), (X_COORDINATE, Y_COORDINATE), FONT, FONT_SCALE, GREEN, PUT_TEXT_THICKNESS)
+    putText(frame, str(counter), (X_COORDINATE, Y_COORDINATE), FONT, FONT_SCALE, text_color, PUT_TEXT_THICKNESS)
     imshow(IMAGE_NAME, frame)
 
 
@@ -84,10 +87,11 @@ def is_sleeping() -> None:
     while True:
         frame, key = capture()
         is_blinked, eye_coordinates = are_eyes_blinked(array(frame))
+        text_color = RED if is_blinked else GREEN
         if eye_coordinates:
-            mark_eyes_on_image(frame, eye_coordinates)
+            mark_eyes_on_image(frame, eye_coordinates, text_color)
         counter, start = handle_counter(counter, is_blinked, start, frame)
-        image_show(frame, counter)
+        image_show(frame, counter, text_color)
 
         if key == ord('q'):
             break
