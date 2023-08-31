@@ -6,9 +6,6 @@ from os.path import join, abspath
 PREDICTOR_PATH = abspath(join(__file__, pardir, pardir, 'blink_detector', 'shape_predictor_68_face_landmarks.dat'))
 ALARM_PATH = abspath(join(__file__, pardir, pardir, 'alarms', 'Alarm.mp3'))
 
-EYE_AR_THRESH = 0.27
-MAX_BLINKS = 2
-
 # image parameters
 FONT = FONT_HERSHEY_SIMPLEX
 GREEN = (0, 255, 0)
@@ -20,7 +17,7 @@ Y_COORDINATE = 350
 IMAGE_NAME = "Surgeon's image"
 
 # sleep and eyes blinked detection
-EYE_AR_THRESH = 0.22
+EYE_AR_THRESH = 0.27
 MAX_BLINKS = 2
 UP_SAMPLING = 1
 PERIOD_TIME = 0.5
