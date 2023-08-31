@@ -7,7 +7,7 @@ FONT = FONT_HERSHEY_SIMPLEX
 PREDICTOR_PATH = abspath(join(__file__, pardir, pardir, 'blink_detector', 'shape_predictor_68_face_landmarks.dat'))
 
 EYE_AR_THRESH = 0.27
-MAX_BLINKS = 2
+MAX_BLINKS = 20
 
 ALARM_PATH = abspath(join(__file__, pardir, pardir, 'alarms', 'Alarm.mp3'))
 

@@ -3,8 +3,7 @@ from blinked_detector import are_eyes_blinked
 from numpy import array
 from cv2 import hconcat, imshow
 
-COUNT_WIN = 20
-
+COUNT_WIN = 200
 
 def split_img(frame :array):
     h, w, channels = frame.shape
