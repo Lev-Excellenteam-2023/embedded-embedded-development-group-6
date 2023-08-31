@@ -18,16 +18,16 @@ telegram_counter = 0
 
 
 def alarm(image=None):
-    playsound.playsound(ALARM_PATH)
+#    playsound.playsound(ALARM_PATH)
 
-    if USE_TELEGRAM and image is not None:
+    if USE_TELEGRAM == False  and (image is not None):
         send_image_to_telegram(image)
 
 
 def send_image_to_telegram(image: array) -> None:
     global telegram_counter
 
-    log(telegram_counter, level=DEBUG)
+    log( level=DEBUG,msg= telegram_counter)
 
     if telegram_counter == TELEGRAM_MAX:
         try:
@@ -36,10 +36,10 @@ def send_image_to_telegram(image: array) -> None:
             response = post(API_URL, data={'chat_id': TELEGRAM_CHAT_ID},
                             files={'photo': ('image.jpg', encoded_image.tobytes())})
 
-            log(response.text, level=INFO)
+            log(msg = response.text, level=INFO)
 
         except Exception as e:
-            log(e, level=DEBUG)
+            log(msg = str(e), level=DEBUG)
         finally:
             telegram_counter = 0
 
