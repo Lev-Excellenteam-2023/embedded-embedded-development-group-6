@@ -21,7 +21,7 @@ IMAGE_NAME = "Surgeon's image"
 
 # sleep and eyes blinked detection
 EYE_AR_THRESH = 0.22
-MAX_BLINKS = 2
+MAX_BLINKS = 3
 UP_SAMPLING = 1
 PERIOD_TIME = 0.5
 
