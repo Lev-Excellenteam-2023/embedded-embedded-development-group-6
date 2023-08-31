@@ -17,12 +17,11 @@ def capture() -> (ndarray, int):
     """
     Captures a frame from a video source, resizes it, and waits for a key press.
 
-    :return: A tuple containing the captured frame (as a NumPy ndarray) and the key code.
+    :return: A tuple containing the captured frame (as a NumPy ndarray).
     """
     frame = VS.read()
     frame = resize(frame, width=WIDTH_RESIZE)
-    key = waitKey(1)
-    return frame, key
+    return frame
 
 
 def mark_eyes_on_image(frame: ndarray, eye_coordinates: ndarray, text_color: Tuple[int, int, int]) -> None:
@@ -63,17 +62,19 @@ def handle_counter(counter: int, is_blinked: bool, start_time: float, frame) -> 
     return counter, start_time
 
 
-def image_show(frame: ndarray, counter: int, text_color: Tuple[int, int, int]) -> None:
+def image_show(frame: ndarray, counter: int, text_color: Tuple[int, int, int]) -> int:
     """
     Display an image frame with a counter value overlaid.
 
     :param text_color: The color the number should be colored.
     :param frame: A numpy.ndarray representing the image frame to display.
     :param counter: An integer representing the counter value to display on the image.
-    :return: None
+    :return: The key of the user
     """
     putText(frame, str(counter), (X_COORDINATE, Y_COORDINATE), FONT, FONT_SCALE, text_color, PUT_TEXT_THICKNESS)
     imshow(IMAGE_NAME, frame)
+    key = waitKey(1)
+    return key
 
 
 def is_sleeping() -> None:
@@ -85,13 +86,13 @@ def is_sleeping() -> None:
     counter = 0
     start = time()
     while True:
-        frame, key = capture()
+        frame = capture()
         is_blinked, eye_coordinates = are_eyes_blinked(array(frame))
         text_color = RED if is_blinked else GREEN
         if eye_coordinates:
             mark_eyes_on_image(frame, eye_coordinates, text_color)
         counter, start = handle_counter(counter, is_blinked, start, frame)
-        image_show(frame, counter, text_color)
+        key = image_show(frame, counter, text_color)
 
         if key == ord('q'):
             break
