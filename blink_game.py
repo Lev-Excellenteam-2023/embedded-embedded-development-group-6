@@ -1,9 +1,9 @@
 from utils.util import capture, mark_eyes_on_image, close_camera,   put_text, image_show
 from blinked_detector import are_eyes_blinked
 from numpy import array
-from cv2 import hconcat, imshow
+from cv2 import hconcat, imshow, waitKey
 
-COUNT_WIN = 200
+COUNT_WIN = 10
 
 def split_img(frame :array):
     h, w, channels = frame.shape
@@ -58,6 +58,10 @@ def play():
             winner = 'left'
             break
 
+    frame, key = capture()
+    put_text(frame,  f'{winner} win')
+    imshow('game',  frame)
+    waitKey(0)
 
     close_camera()
 
