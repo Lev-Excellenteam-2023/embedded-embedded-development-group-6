@@ -12,6 +12,11 @@ VS = VideoStream(src=0).start()
 
 
 def capture() -> (ndarray, int):
+    """
+    Captures a frame from a video source, resizes it, and waits for a key press.
+
+    :return: A tuple containing the captured frame (as a NumPy ndarray) and the key code.
+    """
     frame = VS.read()
     frame = resize(frame, width=WIDTH_RESIZE)
     key = waitKey(1)
@@ -19,6 +24,14 @@ def capture() -> (ndarray, int):
 
 
 def mark_eyes_on_image(frame: ndarray, eye_coordinates: ndarray) -> None:
+    """
+    Marks the eyes on an image frame using convex hulls.
+
+    :param frame: The image frame to mark the eyes on.
+    :param eye_coordinates: A NumPy array containing coordinates of the eyes.
+    :return: None
+
+    """
     left_eye_hull = convexHull(eye_coordinates[0])
     right_eye_hull = convexHull(eye_coordinates[1])
     drawContours(frame, [left_eye_hull], -1, GREEN, PUT_TEXT_THICKNESS)
